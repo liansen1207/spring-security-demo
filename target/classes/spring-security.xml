@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+    <!-- 配置 favicon.ico(网站logo)不进行安全拦截-->
+    <http pattern="/favicon.ico" security="none"/>
+    <!-- 登录页和登录失败页不进行安全拦截,security="none":设置此资源不被拦截. -->
+    <http pattern="/login.html" security="none"></http>
+    <http pattern="/login_error.html" security="none"></http>
+    <!-- 页面拦截规则  除了ROLE_USER，其他的都不让访问-->
+    <http use-expressions="false">
+        <!-- /** 表示的是该目录以及该目录下所有级别子目录的资源-->
+        <!--ROLE_USER：必须验证具备该角色后才能访问,注意角色名称必须以ROLE_开头-->
+        <intercept-url pattern="/**" access="ROLE_USER" />
+        <!--
+            login-page：指定登录页面
+            authentication-failure-url：指定了身份验证失败时跳转到的页面
+            default-target-url：指定了成功进行身份验证和授权后默认呈现给用户的页面
+            csrf disabled="true"  关闭csrf ,如果不加会出现错误
+        -->
+        <form-login login-page="/login.html" default-target-url="/index.html" always-use-default-target="true" authentication-failure-url="/login_error.html"/>
+            <!--
+                CSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，
+                通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。
+            -->
+            <csrf disabled="true"/>
+        <form-login/>
+    </http>
+
+    <!-- 认证管理器 -->
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <!--ROLE_USER：必须验证具备该角色后才能访问,注意角色名称必须以ROLE_开头-->
+                <user name="admin" password="123" authorities="ROLE_USER"/>
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+</beans:beans>
